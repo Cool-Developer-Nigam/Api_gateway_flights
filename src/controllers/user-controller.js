@@ -32,8 +32,30 @@ async function createUser(req, res) {
     }
 }
 
+async function signIn(req,res){
+    try {
+        const user=await UserService.signIn({
+            email:req.body.email,
+            password:req.body.password
+        });
+        SuccessResponse.data=user;
+        SuccessResponse.message='User signed in successfully';
+        return res
+        .status(StatusCodes.OK)
+        .json(SuccessResponse);
+    } catch (error) {
+        console.log(error);
+        ErrorResponse.error=error;
+        ErrorResponse.message='Something went wrong while signing in';
+        return res
+        .status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(ErrorResponse);
+    }
+}
+
 
 module.exports = {
-    createUser
+    createUser,
+    signIn
 }
    
