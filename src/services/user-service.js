@@ -39,8 +39,7 @@ async function signIn(data){
         }
 
         const token=await Auth.createToken({id:user.id,email:user.email});
-        user.token=token;
-        return user;
+        return { token };
     } catch (error) {
         if(error instanceof AppError){
             throw error;
@@ -49,10 +48,32 @@ async function signIn(data){
     }
 }
 
+async function isAuthenticated(token){
+    try {
+        if(!token){
+            throw new AppError('Token not found', StatusCodes.BAD_REQUEST);
+        } 
+
+        const response=await Auth.verifyToken(token);
+        const user=await userRepo.get(response.id);
+        if(!user){
+            throw new AppError('No user found for the given token', StatusCodes.NOT_FOUND);
+        }
+        return user.id;
+    }
+    catch (error) {
+        if(error instanceof AppError){
+            throw error;
+        }   
+        throw new AppError('Token verification failed', StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
 
 
 
 module.exports={
     create,
-    signIn
+    signIn,
+    isAuthenticated
 }

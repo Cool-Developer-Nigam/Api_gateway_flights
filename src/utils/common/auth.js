@@ -25,7 +25,17 @@ return jwt.sign(input,serverConfig.JWT_SECRET_KEY,{expiresIn:serverConfig.JWT_EX
 
 }
 
+async function verifyToken(token){
+    try{
+        return jwt.verify(token,serverConfig.JWT_SECRET_KEY);
+    }
+    catch(error){
+        throw new AppError('Token verification failed', StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
 module.exports={
     checkPassword,
-    createToken
+    createToken,
+    verifyToken
 }
